@@ -1,2 +1,8 @@
-# installation
-One click command to install rust and node on any linux system without having any issue
+- Node js and npm installation command
+```bash
+source <(wget -O - https://raw.githubusercontent.com/zunxbt/installation/main/node.sh)
+```
+- Rust installation command
+```bash
+source <(wget -O - https://raw.githubusercontent.com/zunxbt/installation/main/rust.sh)
+```
