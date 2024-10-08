@@ -10,3 +10,7 @@ source <(wget -O - https://raw.githubusercontent.com/zunxbt/installation/main/ru
 ```bash
 source <(wget -O - https://raw.githubusercontent.com/zunxbt/installation/main/foundry.sh)
 ```
+- Docker installation command
+```bash
+source <(wget -O - https://raw.githubusercontent.com/zunxbt/installation/main/docker.sh)
+```
