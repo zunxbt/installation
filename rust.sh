@@ -10,8 +10,8 @@ load_rust() {
     export CARGO_HOME="$HOME/.cargo"
     export PATH="$CARGO_HOME/bin:$PATH"
     # Source the environment variables for the current session
-    if [ -f "$HOME/.cargo/env" ]; then
-        source "$HOME/.cargo/env"
+    if [ -f "$CARGO_HOME/env" ]; then
+        source "$CARGO_HOME/env"
     fi
 }
 
@@ -52,10 +52,15 @@ fi
 # Load Rust environment after installation
 load_rust 
 
-# Fix permissions for Rust directories
+# Fix permissions for Rust directories (using sudo for root access)
 echo "Ensuring correct permissions for Rust directories..."
-chmod -R 755 "$RUSTUP_HOME"
-chmod -R 755 "$CARGO_HOME"
+if [ -d "$RUSTUP_HOME" ]; then
+    sudo chmod -R 755 "$RUSTUP_HOME"
+fi
+
+if [ -d "$CARGO_HOME" ]; then
+    sudo chmod -R 755 "$CARGO_HOME"
+fi
 
 # Function to retry sourcing environment if Cargo is not found
 retry_cargo() {
@@ -69,7 +74,7 @@ retry_cargo() {
             break
         else
             echo "Cargo not found in the current session. Attempting to reload the environment..."
-            source "$HOME/.cargo/env"
+            source "$CARGO_HOME/env"
             retry_count=$((retry_count + 1))
         fi
     done
@@ -98,13 +103,6 @@ else
     PROFILE="$HOME/.bashrc"
 fi
 
-# After adding Rust environment variables to .bashrc or .zshrc
-if [[ $SHELL == *"zsh"* ]]; then
-    PROFILE="$HOME/.zshrc"
-else
-    PROFILE="$HOME/.bashrc"
-fi
-
 # Add Rust environment variables if not already present
 if ! grep -q "CARGO_HOME" "$PROFILE"; then
     echo "Adding Rust environment variables to $PROFILE..."
@@ -112,7 +110,7 @@ if ! grep -q "CARGO_HOME" "$PROFILE"; then
         echo 'export RUSTUP_HOME="$HOME/.rustup"'
         echo 'export CARGO_HOME="$HOME/.cargo"'
         echo 'export PATH="$CARGO_HOME/bin:$PATH"'
-        echo 'source "$HOME/.cargo/env"'
+        echo 'source "$CARGO_HOME/env"'
     } >> "$PROFILE"
 fi
 
@@ -120,7 +118,7 @@ fi
 source "$PROFILE"
 
 # Force reload of cargo env in case the session doesn’t reflect it yet
-source "$HOME/.cargo/env"
+source "$CARGO_HOME/env"
 
 # Retry checking for Cargo availability
 retry_cargo
